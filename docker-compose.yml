@@ -1,0 +1,24 @@
+services:
+  postgres:
+    image: postgres:17-alpine
+    container_name: my-login-db
+    environment:
+      POSTGRES_DB: my_login
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: postgres
+    ports:
+      - "127.0.0.1:5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+      # Executed automatically only the first time (when the volume is empty).
+      # Otherwise run `npm run db:init` from backend/.
+      - ./backend/database/schema.sql:/docker-entrypoint-initdb.d/01-schema.sql:ro,Z
+
+  backend:
+    build: ./backend
+    env_file: ./backend/.env
+    ports:
+    - "127.0.0.1:3000:3000"
+
+volumes:
+  pgdata:
